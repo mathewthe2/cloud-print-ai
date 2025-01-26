@@ -17,9 +17,9 @@ graph LR
         P[Publisher]
     end
 
-    A --> C[Cloud DNS\nXXXXXXXXXXXXX\nXXXXXXXXXXXXX\nXXXXXXXXXXXXX]
+    A --> C[Cloud DNS\nXXXXXXXXXXXXXXXXX\nXXXXXXXXXXXXXXXXXX]
     B --> C
-    C --> D[Cloud Load Balancer\nXXXXXXXXXXXXX\nXXXXXXXXXXXXX\nXXXXXXXXXXXXX]
+    C --> D[Cloud Load Balancer\nXXXXXXXXXXXXXXXXX\nXXXXXXXXXXXXXXXXX]
 
     D --> E[Content Server Zone A]
     D --> F[Content Server Zone B]
@@ -89,7 +89,7 @@ const ExcalidrawFrame = () => {
   };
 
   return (
-    <div style={{ height: "500px" }}>
+    <div style={{ height: "800px" }}>
       <Excalidraw
         // initialData={{
         //   elements: elements,
