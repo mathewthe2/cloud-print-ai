@@ -1,0 +1,6 @@
+id,title,description,status,user_id
+1,環境準備,3つの環境dev/stg/prd環境作成,DONE,1
+2,ログイン機能開発,Cognito経由してログイン機能開発,DOING,1
+3,単体テスト,ログイン機能単体テスト,TODO,1
+4,リリース,3つの環境dev/stg/prdの環境へリリース,TODO,1
+8,UAT,受け入れテスト,TODO,1
