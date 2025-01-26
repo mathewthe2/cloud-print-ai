@@ -38,6 +38,10 @@ const resourceDataMap: Record<string, GoogleIconData> = {
     svg: "../assets/google-cloud-icons/app_engine/app_engine.svg",
     label: "App\nEngine",
   },
+  cloudrun: {
+    svg: "../assets/google-cloud-icons/cloud_run/cloud_run.svg",
+    label: "Cloud Run",
+  },
 };
 
 interface TextContainer {
