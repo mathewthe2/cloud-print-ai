@@ -14,6 +14,7 @@ import ExcalidrawFrame from "../components/ExaclidrawFrame";
 import { IconBrandGoogle, IconCode } from "@tabler/icons-react";
 import { useState } from "react";
 import TerraformFrame from "../components/TerraformFrame";
+import run from "../lib/vertex";
 
 type MainComponentType = "diagram" | "terraform";
 
@@ -72,6 +73,9 @@ const Index = () => {
             <Title order={3}>Cloud Print AI</Title>
             <Button variant="outline" onClick={() => open()}>
               構成図を生成する
+            </Button>
+            <Button variant="outline" onClick={() => run()}>
+              クリック
             </Button>
           </Group>
         </AppShell.Header>

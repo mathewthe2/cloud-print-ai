@@ -2,8 +2,8 @@ import { type DataURL } from "@excalidraw/excalidraw/types/types";
 
 const loadSvg = async (fileUrl: string) => {
   try {
-    const svgUrl = new URL(fileUrl, import.meta.url).toString();
-    const response = await fetch(svgUrl);
+    // const svgUrl = new URL(fileUrl, import.meta.url).toString();
+    const response = await fetch(fileUrl);
     const arrayBuffer = await response.arrayBuffer();
     const uint8Array = new Uint8Array(arrayBuffer);
     const blob = new Blob([uint8Array], { type: "image/svg+xml" });

@@ -27,19 +27,19 @@ interface GoogleIconData {
 
 const resourceDataMap: Record<string, GoogleIconData> = {
   clouddns: {
-    svg: "../assets/google-cloud-icons/cloud_dns/cloud_dns.svg",
+    svg: "/assets/google-cloud-icons/cloud_dns/cloud_dns.svg",
     label: "Cloud\nDNS",
   },
   loadbalanc: {
-    svg: "../assets/google-cloud-icons/cloud_load_balancing/cloud_load_balancing.svg",
+    svg: "/assets/google-cloud-icons/cloud_load_balancing/cloud_load_balancing.svg",
     label: "Cloud Load\nBalancing",
   },
   appen: {
-    svg: "../assets/google-cloud-icons/app_engine/app_engine.svg",
+    svg: "/assets/google-cloud-icons/app_engine/app_engine.svg",
     label: "App\nEngine",
   },
   cloudrun: {
-    svg: "../assets/google-cloud-icons/cloud_run/cloud_run.svg",
+    svg: "/assets/google-cloud-icons/cloud_run/cloud_run.svg",
     label: "Cloud Run",
   },
 };
