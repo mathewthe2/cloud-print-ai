@@ -1,0 +1,6 @@
+fastapi
+fastapi-utilities
+slowapi
+uvicorn
+cachetools
+google-genai
