@@ -46,6 +46,22 @@ const resourceDataMap: Record<string, GoogleIconData> = {
     svg: "/assets/google-cloud-icons/cloud_functions/cloud_functions.svg",
     label: "Cloud\nFunctions",
   },
+  computen: {
+    svg: "/assets/google-cloud-icons/compute_engine/compute_engine.svg",
+    label: "Compute\nEngine",
+  },
+  cloudsql: {
+    svg: "/assets/google-cloud-icons/cloud_sql/cloud_sql.svg",
+    label: "Cloud\nSQL",
+  },
+  cloudstor: {
+    svg: "/assets/google-cloud-icons/cloud_storage/cloud_storage.svg",
+    label: "Cloud\nStorage",
+  },
+  pubsub: {
+    svg: "/assets/google-cloud-icons/pubsub/pubsub.svg",
+    label: "Cloud\nPub/Sub",
+  },
   firest: {
     svg: "/assets/google-cloud-icons/firestore/firestore.svg",
     label: "Firestore",
@@ -56,8 +72,12 @@ export const labelMaps: Record<string, string> = {
   "Cloud DNS": "clouddns",
   "Cloud Load Balancing": "loadbalanc",
   "App Engine": "appen",
+  "Cloud Pub/Sub": "pubsub",
+  "Cloud SQL": "cloudsql",
+  "Cloud Storage": "cloudstor",
   "Cloud Run": "cloudrun",
   "Cloud Functions": "cloudfun",
+  "Compute Engine": "computen",
   Firestore: "firest",
 };
 
