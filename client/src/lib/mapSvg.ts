@@ -42,7 +42,26 @@ const resourceDataMap: Record<string, GoogleIconData> = {
     svg: "/assets/google-cloud-icons/cloud_run/cloud_run.svg",
     label: "Cloud Run",
   },
+  cloudfun: {
+    svg: "/assets/google-cloud-icons/cloud_functions/cloud_functions.svg",
+    label: "Cloud\nFunctions",
+  },
+  firest: {
+    svg: "/assets/google-cloud-icons/firestore/firestore.svg",
+    label: "Firestore",
+  },
 };
+
+export const labelMaps: Record<string, string> = {
+  "Cloud DNS": "clouddns",
+  "Cloud Load Balancing": "loadbalanc",
+  "App Engine": "appen",
+  "Cloud Run": "cloudrun",
+  "Cloud Functions": "cloudfun",
+  Firestore: "firest",
+};
+
+export const resourceDataKeys = Object.keys(resourceDataMap);
 
 interface TextContainer {
   key?: string;
