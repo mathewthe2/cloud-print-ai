@@ -11,21 +11,52 @@ import type {
 import loadSvg from "./loadSvg";
 import type { ExcalidrawElementSkeleton } from "@excalidraw/excalidraw/types/data/transform";
 
-const SVG_WIDTH = 60;
-const SVG_HEIGHT = 60;
-const SVG_OFFSET_X = 5;
-const SVG_OFFSET_Y = 15;
-
 const LABEL_OFFSET_X = 55;
 const LABEL_OFFSET_Y = 0;
 const LABEL_FONT_SIZE = 18;
 
-interface GoogleIconData {
+interface styling {
+  width: number;
+  height: number;
+  offset_x: number;
+  offset_y: number;
+}
+
+const SVG_STYLING: Record<string, styling> = {
+  default: {
+    width: 60,
+    height: 60,
+    offset_x: 5,
+    offset_y: 15,
+  },
+  diamond: {
+    width: 60,
+    height: 60,
+    offset_x: 55,
+    offset_y: 95,
+  },
+  ellipse: {
+    width: 60,
+    height: 60,
+    offset_x: 25,
+    offset_y: 45,
+  },
+};
+
+interface IconData {
   svg: string;
   label: string;
 }
 
-const resourceDataMap: Record<string, GoogleIconData> = {
+const resourceDataMap: Record<string, IconData> = {
+  bigq: {
+    svg: "/assets/google-cloud-icons/bigquery/bigquery.svg",
+    label: "BigQuery",
+  },
+  cloudcdn: {
+    svg: "/assets/google-cloud-icons/cloud_cdn/cloud_cdn.svg",
+    label: "Cloud\nCDN",
+  },
   clouddns: {
     svg: "/assets/google-cloud-icons/cloud_dns/cloud_dns.svg",
     label: "Cloud\nDNS",
@@ -40,7 +71,7 @@ const resourceDataMap: Record<string, GoogleIconData> = {
   },
   cloudrun: {
     svg: "/assets/google-cloud-icons/cloud_run/cloud_run.svg",
-    label: "Cloud Run",
+    label: "Cloud\nRun",
   },
   cloudfun: {
     svg: "/assets/google-cloud-icons/cloud_functions/cloud_functions.svg",
@@ -58,6 +89,34 @@ const resourceDataMap: Record<string, GoogleIconData> = {
     svg: "/assets/google-cloud-icons/cloud_storage/cloud_storage.svg",
     label: "Cloud\nStorage",
   },
+  cloudlog: {
+    svg: "/assets/google-cloud-icons/cloud_logging/cloud_logging.svg",
+    label: "Cloud\nLogging",
+  },
+  cloudmon: {
+    svg: "/assets/google-cloud-icons/cloud_monitoring/cloud_monitoring.svg",
+    label: "Cloud\nMonitoring",
+  },
+  cloudsh: {
+    svg: "/assets/google-cloud-icons/cloud_scheduler/cloud_scheduler.svg",
+    label: "Cloud\nScheduler",
+  },
+  cloudspan: {
+    svg: "/assets/google-cloud-icons/cloud_spanner/cloud_spanner.svg",
+    label: "Cloud\nSpanner",
+  },
+  cloudgat: {
+    svg: "/assets/google-cloud-icons/cloud_api_gateway/cloud_api_gateway.svg",
+    label: "Cloud\nAPI\nGateway",
+  },
+  datastore: {
+    svg: "/assets/google-cloud-icons/datastore/datastore.svg",
+    label: "Datastore",
+  },
+  memorystore: {
+    svg: "/assets/google-cloud-icons/memorystore/memorystore.svg",
+    label: "Memorystore",
+  },
   pubsub: {
     svg: "/assets/google-cloud-icons/pubsub/pubsub.svg",
     label: "Cloud\nPub/Sub",
@@ -66,19 +125,47 @@ const resourceDataMap: Record<string, GoogleIconData> = {
     svg: "/assets/google-cloud-icons/firestore/firestore.svg",
     label: "Firestore",
   },
+  idplat: {
+    svg: "/assets/google-cloud-icons/identity_platform/identity_platform.svg",
+    label: "Identity\nPlatform",
+  },
+  gke: {
+    svg: "/assets/google-cloud-icons/google_kubernetes_engine/google_kubernetes_engine.svg",
+    label: "Google\nKubernetes\nEngine",
+  },
 };
 
 export const labelMaps: Record<string, string> = {
+  BigQuery: "bigq",
+  "API Gateway": "cloudgat",
+  Datastore: "datastore",
+  "Cloud CDN": "cloudcdn",
+  "Cloud Datastore": "datastore",
+  "Cloud API Gateway": "cloudgat",
   "Cloud DNS": "clouddns",
   "Cloud Load Balancing": "loadbalanc",
+  ロードバランサー: "loadbalanc",
+  "Load Balancing": "loadbalanc",
+  "Load Balancer": "loadbalanc",
   "App Engine": "appen",
   "Cloud Pub/Sub": "pubsub",
+  "Cloud Scheduler": "cloudsh",
   "Cloud SQL": "cloudsql",
   "Cloud Storage": "cloudstor",
   "Cloud Run": "cloudrun",
   "Cloud Functions": "cloudfun",
+  "Cloud Logging": "cloudlog",
+  "Cloud Monitoring": "cloudmon",
+  "Cloud Spanner": "cloudspan",
   "Compute Engine": "computen",
+  "Google Kubernetes Engine": "gke",
+  "Kubernetes Engine": "gke",
+  "GKE Cluster": "gke",
+  GKE: "gke",
+  gke: "gke",
+  "Identity Platform": "idplat",
   Firestore: "firest",
+  Memorystore: "memorystore",
 };
 
 export const resourceDataKeys = Object.keys(resourceDataMap);
@@ -87,6 +174,7 @@ interface TextContainer {
   key?: string;
   x?: number;
   y?: number;
+  type?: string;
 }
 
 interface MapTextWithSvgOutput {
@@ -143,6 +231,7 @@ export const mapTextWithSvg = async (
     if (Object.keys(textContainerMap).includes(elements[i]["id"])) {
       textContainerMap[elements[i]["id"]]["x"] = elements[i]["x"];
       textContainerMap[elements[i]["id"]]["y"] = elements[i]["y"];
+      textContainerMap[elements[i]["id"]]["type"] = elements[i]["type"];
     }
   }
 
@@ -154,19 +243,21 @@ export const mapTextWithSvg = async (
 
   const svgElements = convertToExcalidrawElements(
     Object.values(textContainerMap).map((textContainer) => {
+      const textContainerType = textContainer["type"] ?? "default";
+      const svg_styling = Object.keys(SVG_STYLING).includes(textContainerType)
+        ? SVG_STYLING[textContainerType]
+        : SVG_STYLING["default"];
       return {
         fileId: (textContainer.key ?? "") as FileId,
         type: "image",
-        x: textContainer.x != null ? textContainer.x + SVG_OFFSET_X : 0,
-        y: textContainer.y != null ? textContainer.y + SVG_OFFSET_Y : 0,
-        width: SVG_WIDTH,
-        height: SVG_HEIGHT,
+        x: textContainer.x != null ? textContainer.x + svg_styling.offset_x : 0,
+        y: textContainer.y != null ? textContainer.y + svg_styling.offset_y : 0,
+        width: svg_styling.width,
+        height: svg_styling.height,
         backgroundColor: "",
       };
     })
   );
-
-  // console.log("files", files);
 
   return {
     elements: [...elements, ...svgElements, ...textElements],

@@ -1,5 +1,4 @@
 import { getVertexAI, getGenerativeModel, Schema } from "firebase/vertexai";
-import example from "./examples";
 import { labelMaps } from "./mapSvg";
 import { replaceCaseInsensitive } from "../utils/string";
 import firebaseApp from "./firebaseapp";
@@ -48,6 +47,8 @@ const promptContext = `
     and DO NOT APPLY any style or STYLE keyword to google service objects.
 
     Mermaid and terraform has to be in English.
+    DO NOT use any Japanese characters in the Mermaid output.
+
     Title, description, and running cost should be in Japanese.
     Also, give terraform code that would be deployable to Google Cloud, and estimate the running cost with a number in USD.
 
@@ -60,11 +61,29 @@ const promptContext = `
     \n
 `;
 
+const parseTerraform = (terraform: string) => {
+  terraform = replaceCaseInsensitive(terraform, "```terraform\n", "");
+  terraform = replaceCaseInsensitive(terraform, "```terraform", "");
+  terraform = replaceCaseInsensitive(terraform, "```", "");
+  return terraform;
+};
+
 const parseDiagram = (diagram: string) => {
-  if (diagram.includes("graph")) {
-    diagram = "graph" + diagram.split(/graph(.*)/s)[1];
+  if (diagram.includes("```mermaid\n")) {
+    diagram = diagram.split("```mermaid\n")[1];
+  } else if (diagram.includes("```mermaid")) {
+    diagram = diagram.split("```mermaid")[1];
   } else if (diagram.includes("flowchart")) {
     diagram = "flowchart" + diagram.split(/flowchart(.*)/s)[1];
+  } else if (diagram.includes("sequenceDiagram")) {
+    diagram = "sequenceDiagram" + diagram.split(/sequenceDiagram(.*)/s)[1];
+  } else if (
+    diagram.includes("graph LR") ||
+    diagram.includes("graph RL") ||
+    diagram.includes("graph BT") ||
+    diagram.includes("graph TB")
+  ) {
+    diagram = "graph" + diagram.split(/graph(.*)/s)[1];
   }
 
   diagram = replaceCaseInsensitive(diagram, "```", "");
@@ -79,36 +98,38 @@ const parseDiagram = (diagram: string) => {
     }
   }
   return diagram;
+};
 
-  // const regex = new RegExp(`\\b\\w*(${labels.join("|")})\\w*\\b`, "gi");
-
-  // return diagram.replace(
-  //   regex,
-  //   (match) => `${match}\nXXXXXXXXXXXXXXXXXX\nXXXXXXXXXXXXXXXXXX`
-  // );
+export const parseProposals = (proposals: DiagramProposalInterface[]) => {
+  return proposals.map((proposal: DiagramProposalInterface) => {
+    return {
+      ...proposal,
+      terraform: parseTerraform(proposal.terraform),
+      diagram: parseDiagram(proposal.diagram),
+    };
+  });
 };
 
 const askVertex = async ({
   requirements,
   budget,
-  isUseMockData,
-}: {
+  isIncludeLoggingAndMonitoring,
+}: // isUseMockData,
+{
   requirements: string;
   budget: number | null;
-  isUseMockData?: boolean;
+  isIncludeLoggingAndMonitoring: boolean;
+  // isUseMockData?: boolean;
 }): Promise<DiagramProposalInterface[]> => {
   let prompt = promptContext + requirements;
   if (budget != null) {
     prompt += `\n This is the monthly budget in USD: ${budget}`;
   }
-  if (isUseMockData) {
-    const exampleProposals = example.map((ex) => {
-      return {
-        ...ex,
-        diagram: parseDiagram(ex.diagram),
-      };
-    });
-    return exampleProposals;
+  if (isIncludeLoggingAndMonitoring) {
+    prompt += "\n Please include Cloud Monitoring and Cloud Logging services.";
+  } else {
+    prompt +=
+      "\n Please do not include Cloud Monitoring and Cloud Logging services.";
   }
 
   const result = await model.generateContent(prompt);
@@ -116,15 +137,8 @@ const askVertex = async ({
   const response = result.response;
   const text = response.text();
   const data = JSON.parse(text);
-  console.log(data["proposals"]);
-  const proposals = data["proposals"].map(
-    (proposal: DiagramProposalInterface) => {
-      return {
-        ...proposal,
-        diagram: parseDiagram(proposal.diagram),
-      };
-    }
-  );
+
+  const proposals = parseProposals(data["proposals"]);
   return proposals;
 };
 

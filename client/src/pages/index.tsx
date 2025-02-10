@@ -1,13 +1,16 @@
 import {
   AppShell,
+  Box,
   Burger,
   Button,
   Center,
+  Checkbox,
   Group,
   LoadingOverlay,
   Modal,
   NavLink,
   NumberInput,
+  ScrollArea,
   Stack,
   Text,
   Textarea,
@@ -19,7 +22,8 @@ import ExcalidrawFrame from "../components/ExcalidrawFrame";
 import { IconBrandGoogle, IconCode } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import TerraformFrame from "../components/TerraformFrame";
-import askVertex, { DiagramProposalInterface } from "../lib/vertex";
+import askVertex, { type DiagramProposalInterface } from "../lib/vertex";
+import ExampleMenu from "../components/ExampleMenu";
 
 type MainComponentType = "diagram" | "terraform";
 
@@ -30,6 +34,8 @@ const Index = () => {
   const [requirements, setRequirements] = useState(
     "月1万ユーザーのECサイトを立ち上げたい"
   );
+  const [isIncludeLoggingAndMonitoring, setIsIncludeLoggingAndMonitoring] =
+    useState(true);
   const [budget, setBudget] = useState<string | number>("");
   const [visible, { close: hideLoading, open: showLoading }] =
     useDisclosure(false);
@@ -50,12 +56,16 @@ const Index = () => {
       const data = await askVertex({
         requirements: requirements,
         budget: typeof budget == "string" ? null : budget,
-        isUseMockData: true,
+        isIncludeLoggingAndMonitoring: isIncludeLoggingAndMonitoring,
       });
       setGeneratedData(data);
       hideLoading();
       close();
     }
+  };
+
+  const generateDiagramWithExample = (data: DiagramProposalInterface[]) => {
+    setGeneratedData(data);
   };
 
   useEffect(() => {
@@ -91,7 +101,12 @@ const Index = () => {
 
   return (
     <>
-      <Modal centered opened={opened} onClose={close} title="新い構成図を生成">
+      <Modal
+        centered
+        opened={opened}
+        onClose={close}
+        title="新いGoogle Cloudアーキテクチャ"
+      >
         <LoadingOverlay
           visible={visible}
           zIndex={1000}
@@ -110,8 +125,18 @@ const Index = () => {
           mt={12}
           label="予算（毎月）"
           placeholder="任意"
+          prefix="$"
           value={budget}
           onChange={(value) => setBudget(value)}
+        />
+        <Checkbox
+          mt={20}
+          mb={20}
+          label="Cloud MonitoringとCloud Loggingをオンにする"
+          checked={isIncludeLoggingAndMonitoring}
+          onChange={(event) =>
+            setIsIncludeLoggingAndMonitoring(event.currentTarget.checked)
+          }
         />
         <Center>
           <Button
@@ -154,8 +179,11 @@ const Index = () => {
             />
             <Title order={3}>CloudPrint AI</Title>
             <Button variant="outline" onClick={() => open()}>
-              構成図を生成する
+              生成ツール
             </Button>
+            <ExampleMenu
+              generateDiagramWithExample={generateDiagramWithExample}
+            />
           </Group>
         </AppShell.Header>
         <AppShell.Navbar p="md">
@@ -187,7 +215,17 @@ const Index = () => {
             {generatedData[0] && proposalButton(generatedData[0])}
             {generatedData[1] && proposalButton(generatedData[1])}
             {generatedData[2] && proposalButton(generatedData[2])}
-            {activeProposal && <Text>{activeProposal.description}</Text>}
+            {activeProposal && (
+              <ScrollArea h={400}>
+                <Text>{activeProposal.description}</Text>
+              </ScrollArea>
+            )}
+            {activeProposal && (
+              <Box mt={20}>
+                <Title order={4}>見積もり</Title>
+                <Text>{activeProposal.runningCost}</Text>
+              </Box>
+            )}
           </Stack>
         </AppShell.Aside>
       </AppShell>
